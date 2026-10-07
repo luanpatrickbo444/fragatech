@@ -16,7 +16,8 @@ import {
   FileText, 
   ShieldCheck, 
   ArrowUpRight, 
-  ArrowDownRight 
+  ArrowDownRight,
+  PackagePlus
 } from 'lucide-react';
 
 export default function Home() {
@@ -24,11 +25,23 @@ export default function Home() {
 
   // Estado dos Produtos
   const [produtos, setProdutos] = useState([
-    { id: 'P001', nome: 'Notebook Pro 14', categoria: 'Informática', saldo: 12, custo: 3850, preco: 4690, min: 5 },
-    { id: 'P002', nome: 'Monitor 24"', categoria: 'Informática', saldo: 18, custo: 780, preco: 999, min: 8 },
-    { id: 'P003', nome: 'Teclado USB', categoria: 'Periféricos', saldo: 7, custo: 65, preco: 99, min: 10 },
-    { id: 'P004', nome: 'Mouse USB', categoria: 'Periféricos', saldo: 42, custo: 42, preco: 69, min: 12 },
+    { id: 'P001', nome: 'Notebook Pro 14', categoria: 'Informática', unidade: 'UN', saldo: 12, custo: 3850, preco: 4690, min: 5 },
+    { id: 'P002', nome: 'Monitor 24"', categoria: 'Informática', unidade: 'UN', saldo: 18, custo: 780, preco: 999, min: 8 },
+    { id: 'P003', nome: 'Teclado USB', categoria: 'Periféricos', unidade: 'UN', saldo: 7, custo: 65, preco: 99, min: 10 },
+    { id: 'P004', nome: 'Mouse USB', categoria: 'Periféricos', unidade: 'UN', saldo: 42, custo: 42, preco: 69, min: 12 },
   ]);
+
+  // Form de Novo Produto no Estoque
+  const [novoProduto, setNovoProduto] = useState({
+    id: '',
+    nome: '',
+    categoria: 'Informática',
+    unidade: 'UN',
+    saldo: 0,
+    custo: 0,
+    preco: 0,
+    min: 5
+  });
 
   // Estado dos Clientes
   const [clientes, setClientes] = useState([
@@ -57,6 +70,14 @@ export default function Home() {
   const [emailCorpo, setEmailCorpo] = useState('Bom dia, Ana.\n\nConfirmamos o recebimento da proposta e solicitamos a confirmação do prazo de entrega do pedido PO-2026-014.\n\nAtenciosamente,\nLuan • Compras • FragaTech');
 
   // Handlers
+  const handleAddProduto = (e) => {
+    e.preventDefault();
+    if (!novoProduto.nome) return;
+    const cod = novoProduto.id.trim() || `P00${produtos.length + 1}`;
+    setProdutos([...produtos, { ...novoProduto, id: cod, saldo: Number(novoProduto.saldo), custo: Number(novoProduto.custo), preco: Number(novoProduto.preco), min: Number(novoProduto.min) }]);
+    setNovoProduto({ id: '', nome: '', categoria: 'Informática', unidade: 'UN', saldo: 0, custo: 0, preco: 0, min: 5 });
+  };
+
   const handleAddCliente = (e) => {
     e.preventDefault();
     if (!novoCliente.nome) return;
@@ -112,7 +133,7 @@ export default function Home() {
             {[
               { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
               { id: 'clientes', label: 'Clientes', icon: Users },
-              { id: 'estoque', label: 'Estoque', icon: Package },
+              { id: 'estoque', label: 'Estoque & Produtos', icon: Package },
               { id: 'fiscal', label: 'Fiscal & Faturamento', icon: Receipt },
               { id: 'email', label: 'E-mail Corporativo', icon: Mail },
               { id: 'didatico', label: 'Modo Didático (SENAI)', icon: GraduationCap }
@@ -305,7 +326,89 @@ export default function Home() {
         {/* ESTOQUE */}
         {activeTab === 'estoque' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-slate-900">Controle e Saldo de Estoque</h2>
+            <h2 className="text-2xl font-bold text-slate-900">Gestão de Estoque & Cadastro de Produtos</h2>
+
+            {/* Modelo de Cadastro de Novo Produto */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+              <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <PackagePlus size={20} className="text-blue-600"/> Cadastrar Novo Produto no Estoque (Modelo Slide 08 SENAI)
+              </h3>
+              <form onSubmit={handleAddProduto} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">Código Único (Ex: P005)</label>
+                  <input 
+                    type="text" placeholder="P005"
+                    value={novoProduto.id} onChange={e => setNovoProduto({...novoProduto, id: e.target.value})}
+                    className="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1" 
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">Descrição do Produto</label>
+                  <input 
+                    type="text" placeholder="Ex: Headset Gamer USB" required
+                    value={novoProduto.nome} onChange={e => setNovoProduto({...novoProduto, nome: e.target.value})}
+                    className="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1" 
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">Categoria</label>
+                  <select 
+                    value={novoProduto.categoria} onChange={e => setNovoProduto({...novoProduto, categoria: e.target.value})}
+                    className="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1"
+                  >
+                    <option value="Informática">Informática</option>
+                    <option value="Periféricos">Periféricos</option>
+                    <option value="Acessórios">Acessórios</option>
+                    <option value="Serviços">Serviços</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">Unidade (UN, CX, PC)</label>
+                  <input 
+                    type="text" placeholder="UN" required
+                    value={novoProduto.unidade} onChange={e => setNovoProduto({...novoProduto, unidade: e.target.value})}
+                    className="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1" 
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">Custo Unitário (R$)</label>
+                  <input 
+                    type="number" step="0.01" min="0" placeholder="150.00" required
+                    value={novoProduto.custo} onChange={e => setNovoProduto({...novoProduto, custo: e.target.value})}
+                    className="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1" 
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">Preço Venda (R$)</label>
+                  <input 
+                    type="number" step="0.01" min="0" placeholder="250.00" required
+                    value={novoProduto.preco} onChange={e => setNovoProduto({...novoProduto, preco: e.target.value})}
+                    className="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1" 
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">Estoque Inicial</label>
+                  <input 
+                    type="number" min="0" placeholder="10" required
+                    value={novoProduto.saldo} onChange={e => setNovoProduto({...novoProduto, saldo: e.target.value})}
+                    className="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1" 
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">Estoque Mínimo (Reposição)</label>
+                  <input 
+                    type="number" min="1" placeholder="5" required
+                    value={novoProduto.min} onChange={e => setNovoProduto({...novoProduto, min: e.target.value})}
+                    className="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1" 
+                  />
+                </div>
+                <div className="md:col-span-4 flex justify-end">
+                  <button type="submit" className="py-2.5 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold shadow-lg shadow-blue-600/30 flex items-center gap-2">
+                    <Plus size={18}/> Salvar e Cadastrar Produto
+                  </button>
+                </div>
+              </form>
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <form onSubmit={handleMovEstoque} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
@@ -352,15 +455,17 @@ export default function Home() {
               </form>
 
               <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <h3 className="font-bold text-slate-900 mb-4">Planilha de Saldos</h3>
+                <h3 className="font-bold text-slate-900 mb-4">Planilha e Saldos Cadastrados</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse text-sm">
                     <thead>
                       <tr className="border-b bg-slate-50 text-slate-500">
                         <th className="p-3">Cód</th>
                         <th className="p-3">Produto</th>
+                        <th className="p-3">Unid.</th>
                         <th className="p-3">Saldo</th>
-                        <th className="p-3">Preço Unit.</th>
+                        <th className="p-3">Custo</th>
+                        <th className="p-3">Preço</th>
                         <th className="p-3">Mínimo</th>
                         <th className="p-3">Status</th>
                       </tr>
@@ -372,8 +477,10 @@ export default function Home() {
                           <tr key={p.id} className="hover:bg-slate-50">
                             <td className="p-3 font-mono font-bold text-blue-600">{p.id}</td>
                             <td className="p-3 font-semibold">{p.nome}</td>
+                            <td className="p-3 text-xs text-slate-500">{p.unidade || 'UN'}</td>
                             <td className="p-3 font-bold">{p.saldo}</td>
-                            <td className="p-3">R$ {p.preco.toLocaleString('pt-BR')}</td>
+                            <td className="p-3 text-slate-500">R$ {p.custo ? p.custo.toLocaleString('pt-BR') : '-'}</td>
+                            <td className="p-3 font-medium">R$ {p.preco.toLocaleString('pt-BR')}</td>
                             <td className="p-3 text-slate-500">{p.min}</td>
                             <td className="p-3">
                               <span className={`px-2 py-1 rounded text-xs font-bold ${status === 'COMPRAR' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`}>
