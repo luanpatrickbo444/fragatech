@@ -1,64 +1,37 @@
-# FragaTech — Sistema de Gestão Operacional v2.0
+# FragaTech — Sistema de Gestão Operacional v2.1
 
-Versão **melhorada e completa** do laboratório prático SENAI.
+Versão **com login por aluno** e **progresso individual salvo**.
 
-## O que foi melhorado
+## Novidades v2.1
 
-- ✅ **Persistência real** com localStorage (dados não somem ao recarregar)
-- ✅ **CRUD completo** de Clientes e Produtos (criar, editar, excluir)
-- ✅ **Integração entre módulos**: emitir NF-e baixa estoque + atualiza faturamento
-- ✅ **Validação de estoque** (não permite saída maior que o saldo)
-- ✅ **Busca** em tabelas de clientes e produtos
-- ✅ **Histórico** de movimentações e documentos fiscais
-- ✅ **Toast** de feedback visual
-- ✅ **Sidebar responsiva** (mobile com menu hambúrguer)
-- ✅ **Modo Didático** interativo com progresso e checklist
-- ✅ **Preview DANFE** realista na emissão fiscal
-- ✅ Código limpo, tipado e modular
+- ✅ **Login por RA** (todos os alunos da planilha QUA.532.001 e QUA.162.002)
+- ✅ **Senha = RA** (padrão da planilha de acesso de rede)
+- ✅ **Progresso individual**: cada aluno tem seus próprios clientes, estoque, faturamento e práticas concluídas
+- ✅ Dados salvos no navegador (localStorage por RA)
+- ✅ Login do professor: `professor` / `senai2026`
+- ✅ Exibe nome e turma do aluno logado na sidebar
+- ✅ Botão Sair + Resetar progresso
+
+## Como fazer login
+
+| Tipo       | Login       | Senha      |
+|------------|-------------|------------|
+| Aluno      | Seu RA      | Seu RA     |
+| Professor  | professor   | senai2026  |
+
+Exemplos de alunos:
+- `660867` / `660867` → Alberto Eduardo de Souza Silva
+- `594339` / `594339` → Emilly Vitória Vieira dos Santos
+- `663663` / `663663` → Ana Laura Lima Gonçalves
 
 ## Como rodar
 
 ```bash
-# 1. Instalar dependências
 npm install
-
-# 2. Rodar em desenvolvimento
 npm run dev
-
-# 3. Abrir no navegador
-# http://localhost:3000
 ```
 
-## Stack
-
-- Next.js 15 (App Router)
-- React 19
-- TypeScript
-- Tailwind CSS
-- Zustand (estado + persistência)
-- Lucide React (ícones)
-
-## Estrutura
-
-```
-app/
-  layout.tsx
-  page.tsx
-  globals.css
-components/
-  Sidebar.tsx
-  Dashboard.tsx
-  Clientes.tsx
-  Estoque.tsx
-  Fiscal.tsx
-  Email.tsx
-  ModoDidatico.tsx
-  Toast.tsx
-lib/
-  types.ts
-  store.ts
-  utils.ts
-```
+Abra http://localhost:3000
 
 ## Deploy no Vercel
 
@@ -66,9 +39,26 @@ lib/
 npx vercel
 ```
 
-Ou conecte o repositório no dashboard da Vercel.
+## Stack
+
+- Next.js 15 + React 19 + TypeScript
+- Tailwind CSS + Lucide
+- Zustand (auth + persistência por aluno)
+
+## Estrutura
+
+```
+app/
+components/
+  Login.tsx          ← tela de login
+  Sidebar.tsx        ← mostra aluno logado + sair
+  ...
+lib/
+  users.ts           ← lista completa de alunos da planilha
+  store.ts           ← auth + dados isolados por RA
+```
 
 ---
 
-Desenvolvido para fins didáticos — Laboratório SENAI  
-FragaTech v2.0
+SENAI-MT • Turmas QUA.532.001 & QUA.162.002  
+FragaTech v2.1

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   GraduationCap,
   CheckCircle2,
@@ -10,11 +9,14 @@ import {
   FileText,
   Users,
   Truck,
+  RotateCcw,
 } from "lucide-react";
 import type { Page } from "@/lib/types";
+import { useStore } from "@/lib/store";
 
 interface Props {
   onNavigate: (page: Page) => void;
+  showToast: (msg: string, type: "success" | "error") => void;
 }
 
 const praticas = [
@@ -72,26 +74,42 @@ const praticas = [
   },
 ];
 
-export function ModoDidatico({ onNavigate }: Props) {
-  const [concluidas, setConcluidas] = useState<number[]>([]);
+export function ModoDidatico({ onNavigate, showToast }: Props) {
+  const praticasConcluidas = useStore((s) => s.praticasConcluidas);
+  const togglePratica = useStore((s) => s.togglePratica);
+  const resetProgresso = useStore((s) => s.resetProgresso);
+  const user = useStore((s) => s.user);
 
-  const toggle = (id: number) => {
-    setConcluidas((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  };
-
-  const progresso = Math.round((concluidas.length / praticas.length) * 100);
+  const progresso = Math.round(
+    (praticasConcluidas.length / praticas.length) * 100
+  );
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-800">
-          Modo Didático — Laboratório SENAI
-        </h2>
-        <p className="text-slate-500 mt-1">
-          Siga a sequência de atividades para praticar a visão sistêmica.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-800">
+            Modo Didático — Laboratório SENAI
+          </h2>
+          <p className="text-slate-500 mt-1">
+            Progresso de{" "}
+            <strong className="text-slate-700">
+              {user?.nome.split(" ").slice(0, 2).join(" ")}
+            </strong>{" "}
+            (salvo automaticamente)
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            if (confirm("Resetar todo o progresso e dados deste aluno?")) {
+              resetProgresso();
+              showToast("Progresso resetado.", "success");
+            }
+          }}
+          className="text-xs text-slate-400 hover:text-red-500 flex items-center gap-1.5 transition"
+        >
+          <RotateCcw size={13} /> Resetar progresso
+        </button>
       </div>
 
       {/* Banner */}
@@ -106,7 +124,9 @@ export function ModoDidatico({ onNavigate }: Props) {
             <div className="mt-4">
               <div className="flex justify-between text-xs mb-1">
                 <span>Progresso</span>
-                <span>{progresso}%</span>
+                <span>
+                  {praticasConcluidas.length}/{praticas.length} ({progresso}%)
+                </span>
               </div>
               <div className="h-2 bg-white/20 rounded-full overflow-hidden">
                 <div
@@ -123,7 +143,7 @@ export function ModoDidatico({ onNavigate }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {praticas.map((p) => {
           const Icon = p.icon;
-          const done = concluidas.includes(p.id);
+          const done = praticasConcluidas.includes(p.id);
           return (
             <div
               key={p.id}
@@ -153,7 +173,18 @@ export function ModoDidatico({ onNavigate }: Props) {
                     </h4>
                   </div>
                 </div>
-                <button onClick={() => toggle(p.id)} className="shrink-0">
+                <button
+                  onClick={() => {
+                    togglePratica(p.id);
+                    showToast(
+                      done
+                        ? "Prática desmarcada."
+                        : "Prática concluída! Progresso salvo.",
+                      "success"
+                    );
+                  }}
+                  className="shrink-0"
+                >
                   {done ? (
                     <CheckCircle2 size={22} className="text-emerald-500" />
                   ) : (

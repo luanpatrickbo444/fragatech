@@ -9,9 +9,12 @@ import {
   GraduationCap,
   Menu,
   X,
+  LogOut,
+  User,
 } from "lucide-react";
 import type { Page } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useStore } from "@/lib/store";
 
 const navItems: { id: Page; label: string; icon: React.ElementType }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -30,9 +33,11 @@ interface SidebarProps {
 }
 
 export function Sidebar({ current, onNavigate, open, setOpen }: SidebarProps) {
+  const user = useStore((s) => s.user);
+  const logout = useStore((s) => s.logout);
+
   return (
     <>
-      {/* Mobile overlay */}
       {open && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -67,6 +72,25 @@ export function Sidebar({ current, onNavigate, open, setOpen }: SidebarProps) {
             </button>
           </div>
 
+          {/* Usuário logado */}
+          {user && (
+            <div className="mx-4 mt-4 p-3 bg-slate-800/60 rounded-xl">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+                  <User size={14} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-white truncate">
+                    {user.nome.split(" ").slice(0, 2).join(" ")}
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate">
+                    RA {user.ra} • {user.turma}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <nav className="p-4 space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -93,19 +117,28 @@ export function Sidebar({ current, onNavigate, open, setOpen }: SidebarProps) {
           </nav>
         </div>
 
-        <div className="p-4 border-t border-slate-800 text-xs text-slate-500">
-          SENAI • Gestão Operacional v2.0
+        <div className="p-4 space-y-2 border-t border-slate-800">
+          <button
+            onClick={() => {
+              logout();
+              setOpen(false);
+            }}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-400 hover:bg-red-600/20 hover:text-red-400 transition"
+          >
+            <LogOut size={16} />
+            Sair
+          </button>
+          <p className="text-[10px] text-slate-600 text-center">
+            SENAI • Gestão Operacional v2.1
+          </p>
         </div>
       </aside>
     </>
   );
 }
 
-export function MobileHeader({
-  onMenu,
-}: {
-  onMenu: () => void;
-}) {
+export function MobileHeader({ onMenu }: { onMenu: () => void }) {
+  const user = useStore((s) => s.user);
   return (
     <header className="lg:hidden sticky top-0 z-30 bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3">
       <button
@@ -114,11 +147,20 @@ export function MobileHeader({
       >
         <Menu size={22} />
       </button>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-1 min-w-0">
         <div className="p-1.5 bg-blue-600 rounded-md text-white font-bold text-sm">
           FT
         </div>
-        <span className="font-semibold text-slate-800">FragaTech</span>
+        <div className="min-w-0">
+          <span className="font-semibold text-slate-800 text-sm block truncate">
+            FragaTech
+          </span>
+          {user && (
+            <span className="text-[10px] text-slate-400 truncate block">
+              {user.nome.split(" ").slice(0, 2).join(" ")}
+            </span>
+          )}
+        </div>
       </div>
     </header>
   );
