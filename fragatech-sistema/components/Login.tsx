@@ -119,8 +119,6 @@ export function Login() {
               <strong className="text-slate-500">Dica:</strong> Use seu RA como
               login e senha (ex: 660867 / 660867).
               <br />
-              Professor: <code className="text-blue-600">professor</code> /{" "}
-              <code className="text-blue-600">senai2026</code>
             </p>
           </div>
         </div>
