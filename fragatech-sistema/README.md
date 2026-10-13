@@ -1,28 +1,25 @@
-# FragaTech — Sistema de Gestão Operacional v2.1
+# FragaTech v3.0 — Sistema de Gestão Operacional SENAI
 
-Versão **com login por aluno** e **progresso individual salvo**.
+## Novidades v3.0
 
-## Novidades v2.1
+### Funcionalidades didáticas
+- **Pedidos de Venda** — cliente → pedido → faturar (baixa estoque + NF-e)
+- **Fornecedores & Ordens de Compra** — OC → receber → entrada de estoque
+- **Relatórios** — estoque baixo, faturamento do dia, clientes por condição, histórico com filtro de data
+- **Exportação CSV** de clientes, movimentações, NF-es e progresso da turma
+- **Impressão / PDF** do DANFE simulado
+- **Validação de CNPJ/CPF** (dígitos verificadores) e e-mail
 
-- ✅ **Login por RA** (todos os alunos da planilha QUA.532.001 e QUA.162.002)
-- ✅ **Senha = RA** (padrão da planilha de acesso de rede)
-- ✅ **Progresso individual**: cada aluno tem seus próprios clientes, estoque, faturamento e práticas concluídas
-- ✅ Dados salvos no navegador (localStorage por RA)
-- ✅ Login do professor: `professor` / `senai2026`
-- ✅ Exibe nome e turma do aluno logado na sidebar
-- ✅ Botão Sair + Resetar progresso
+### Painel do Professor
+- Login: `professor` / `senai2026`
+- Ver progresso de todos os alunos (práticas, pedidos, NF-es, faturamento)
+- Filtrar por turma (QUA.532.001 / QUA.162.002)
+- Resetar progresso de um aluno
+- Exportar relatório da turma em CSV
 
-## Como fazer login
-
-| Tipo       | Login       | Senha      |
-|------------|-------------|------------|
-| Aluno      | Seu RA      | Seu RA     |
-| Professor  | professor   | senai2026  |
-
-Exemplos de alunos:
-- `660867` / `660867` → Alberto Eduardo de Souza Silva
-- `594339` / `594339` → Emilly Vitória Vieira dos Santos
-- `663663` / `663663` → Ana Laura Lima Gonçalves
+### Login dos alunos
+- Login = RA | Senha = RA (planilha de acesso)
+- Progresso individual salvo por aluno
 
 ## Como rodar
 
@@ -31,34 +28,21 @@ npm install
 npm run dev
 ```
 
-Abra http://localhost:3000
+http://localhost:3000
 
-## Deploy no Vercel
+## Fluxo didático completo
 
-```bash
-npx vercel
-```
+1. Cadastrar / editar clientes
+2. Cadastrar produtos e movimentar estoque
+3. Criar pedido de venda → faturar
+4. Emitir NF-e avulsa ou via pedido
+5. Cadastrar fornecedor → OC → receber mercadoria
+6. Consultar relatórios e exportar CSV
+7. Marcar práticas no Modo Didático
 
 ## Stack
 
-- Next.js 15 + React 19 + TypeScript
-- Tailwind CSS + Lucide
-- Zustand (auth + persistência por aluno)
-
-## Estrutura
-
-```
-app/
-components/
-  Login.tsx          ← tela de login
-  Sidebar.tsx        ← mostra aluno logado + sair
-  ...
-lib/
-  users.ts           ← lista completa de alunos da planilha
-  store.ts           ← auth + dados isolados por RA
-```
+Next.js 15 • React 19 • TypeScript • Tailwind • Zustand • Lucide
 
 ---
-
-SENAI-MT • Turmas QUA.532.001 & QUA.162.002  
-FragaTech v2.1
+SENAI-MT • Turmas QUA.532.001 & QUA.162.002 • FragaTech v3.0

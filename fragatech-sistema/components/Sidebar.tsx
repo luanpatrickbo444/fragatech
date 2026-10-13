@@ -1,28 +1,24 @@
 "use client";
 
 import {
-  LayoutDashboard,
-  Users,
-  Package,
-  FileText,
-  Mail,
-  GraduationCap,
-  Menu,
-  X,
-  LogOut,
-  User,
+  LayoutDashboard, Users, Package, FileText, Mail, GraduationCap,
+  Menu, X, LogOut, User, ShoppingCart, Truck, BarChart3, Shield,
 } from "lucide-react";
 import type { Page } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useStore } from "@/lib/store";
+import { useStore, isProfessor } from "@/lib/store";
 
-const navItems: { id: Page; label: string; icon: React.ElementType }[] = [
+const navItems: { id: Page; label: string; icon: React.ElementType; professorOnly?: boolean }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "clientes", label: "Clientes", icon: Users },
   { id: "estoque", label: "Estoque & Produtos", icon: Package },
+  { id: "pedidos", label: "Pedidos de Venda", icon: ShoppingCart },
+  { id: "fornecedores", label: "Fornecedores & OC", icon: Truck },
   { id: "fiscal", label: "Fiscal & Faturamento", icon: FileText },
+  { id: "relatorios", label: "Relatórios", icon: BarChart3 },
   { id: "email", label: "E-mail Corporativo", icon: Mail },
-  { id: "didatico", label: "Modo Didático (SENAI)", icon: GraduationCap },
+  { id: "didatico", label: "Modo Didático", icon: GraduationCap },
+  { id: "professor", label: "Painel Professor", icon: Shield, professorOnly: true },
 ];
 
 interface SidebarProps {
@@ -35,44 +31,31 @@ interface SidebarProps {
 export function Sidebar({ current, onNavigate, open, setOpen }: SidebarProps) {
   const user = useStore((s) => s.user);
   const logout = useStore((s) => s.logout);
+  const prof = isProfessor(user);
+
+  const items = navItems.filter((i) => !i.professorOnly || prof);
 
   return (
     <>
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setOpen(false)}
-        />
-      )}
-
-      <aside
-        className={cn(
-          "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col justify-between shadow-xl transition-transform duration-300",
-          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        )}
-      >
-        <div>
+      {open && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setOpen(false)} />}
+      <aside className={cn(
+        "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col justify-between shadow-xl transition-transform duration-300",
+        open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      )}>
+        <div className="overflow-y-auto">
           <div className="p-6 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-600 rounded-lg font-bold text-xl">
-                FT
-              </div>
+              <div className="p-2 bg-blue-600 rounded-lg font-bold text-xl">FT</div>
               <div>
                 <h1 className="font-bold text-lg leading-none">FragaTech</h1>
-                <span className="text-xs text-slate-400">
-                  Laboratório SENAI
-                </span>
+                <span className="text-xs text-slate-400">Laboratório SENAI</span>
               </div>
             </div>
-            <button
-              className="lg:hidden text-slate-400 hover:text-white"
-              onClick={() => setOpen(false)}
-            >
+            <button className="lg:hidden text-slate-400 hover:text-white" onClick={() => setOpen(false)}>
               <X size={20} />
             </button>
           </div>
 
-          {/* Usuário logado */}
           {user && (
             <div className="mx-4 mt-4 p-3 bg-slate-800/60 rounded-xl">
               <div className="flex items-center gap-2.5">
@@ -84,7 +67,7 @@ export function Sidebar({ current, onNavigate, open, setOpen }: SidebarProps) {
                     {user.nome.split(" ").slice(0, 2).join(" ")}
                   </p>
                   <p className="text-[10px] text-slate-400 truncate">
-                    RA {user.ra} • {user.turma}
+                    {prof ? "Professor" : `RA ${user.ra}`} • {user.turma}
                   </p>
                 </div>
               </div>
@@ -92,24 +75,17 @@ export function Sidebar({ current, onNavigate, open, setOpen }: SidebarProps) {
           )}
 
           <nav className="p-4 space-y-1">
-            {navItems.map((item) => {
+            {items.map((item) => {
               const Icon = item.icon;
               const active = current === item.id;
               return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    onNavigate(item.id);
-                    setOpen(false);
-                  }}
+                <button key={item.id}
+                  onClick={() => { onNavigate(item.id); setOpen(false); }}
                   className={cn(
-                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all",
-                    active
-                      ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
-                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                  )}
-                >
-                  <Icon size={18} />
+                    "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
+                    active ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  )}>
+                  <Icon size={17} />
                   {item.label}
                 </button>
               );
@@ -118,19 +94,11 @@ export function Sidebar({ current, onNavigate, open, setOpen }: SidebarProps) {
         </div>
 
         <div className="p-4 space-y-2 border-t border-slate-800">
-          <button
-            onClick={() => {
-              logout();
-              setOpen(false);
-            }}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-400 hover:bg-red-600/20 hover:text-red-400 transition"
-          >
-            <LogOut size={16} />
-            Sair
+          <button onClick={() => { logout(); setOpen(false); }}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-400 hover:bg-red-600/20 hover:text-red-400 transition">
+            <LogOut size={16} /> Sair
           </button>
-          <p className="text-[10px] text-slate-600 text-center">
-            SENAI • Gestão Operacional v2.1
-          </p>
+          <p className="text-[10px] text-slate-600 text-center">SENAI • Gestão Operacional v3.0</p>
         </div>
       </aside>
     </>
@@ -141,25 +109,12 @@ export function MobileHeader({ onMenu }: { onMenu: () => void }) {
   const user = useStore((s) => s.user);
   return (
     <header className="lg:hidden sticky top-0 z-30 bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3">
-      <button
-        onClick={onMenu}
-        className="p-2 rounded-lg hover:bg-slate-100"
-      >
-        <Menu size={22} />
-      </button>
+      <button onClick={onMenu} className="p-2 rounded-lg hover:bg-slate-100"><Menu size={22} /></button>
       <div className="flex items-center gap-2 flex-1 min-w-0">
-        <div className="p-1.5 bg-blue-600 rounded-md text-white font-bold text-sm">
-          FT
-        </div>
+        <div className="p-1.5 bg-blue-600 rounded-md text-white font-bold text-sm">FT</div>
         <div className="min-w-0">
-          <span className="font-semibold text-slate-800 text-sm block truncate">
-            FragaTech
-          </span>
-          {user && (
-            <span className="text-[10px] text-slate-400 truncate block">
-              {user.nome.split(" ").slice(0, 2).join(" ")}
-            </span>
-          )}
+          <span className="font-semibold text-slate-800 text-sm block truncate">FragaTech</span>
+          {user && <span className="text-[10px] text-slate-400 truncate block">{user.nome.split(" ").slice(0, 2).join(" ")}</span>}
         </div>
       </div>
     </header>

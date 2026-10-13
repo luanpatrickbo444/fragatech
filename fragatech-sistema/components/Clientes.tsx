@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { useStore } from "@/lib/store";
 import type { Cliente } from "@/lib/types";
+import { validarCnpjOuCpf, validarEmail, maskCnpjCpf } from "@/lib/utils";
 import type { ToastType } from "./Toast";
 
 interface Props {
@@ -48,6 +49,14 @@ export function Clientes({ showToast }: Props) {
     e.preventDefault();
     if (!form.razaoSocial.trim() || !form.cnpj.trim()) {
       showToast("Razão Social e CNPJ são obrigatórios.", "error");
+      return;
+    }
+    if (!validarCnpjOuCpf(form.cnpj)) {
+      showToast("CNPJ/CPF inválido. Verifique os dígitos.", "error");
+      return;
+    }
+    if (form.email && !validarEmail(form.email)) {
+      showToast("E-mail inválido.", "error");
       return;
     }
     if (editingId) {

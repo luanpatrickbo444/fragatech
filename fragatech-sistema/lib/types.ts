@@ -38,12 +38,54 @@ export type DocumentoFiscal = {
   valorTotal: number;
   data: string;
   numero: string;
+  pedidoId?: string;
+};
+
+export type Fornecedor = {
+  id: string;
+  razaoSocial: string;
+  cnpj: string;
+  contato: string;
+  email: string;
+  telefone: string;
+};
+
+export type ItemPedido = {
+  produtoId: string;
+  quantidade: number;
+  precoUnitario: number;
+};
+
+export type Pedido = {
+  id: string;
+  numero: string;
+  clienteId: string;
+  itens: ItemPedido[];
+  status: "ABERTO" | "FATURADO" | "CANCELADO";
+  data: string;
+  valorTotal: number;
+  observacao?: string;
+};
+
+export type OrdemCompra = {
+  id: string;
+  numero: string;
+  fornecedorId: string;
+  itens: ItemPedido[];
+  status: "ABERTA" | "RECEBIDA" | "CANCELADA";
+  data: string;
+  valorTotal: number;
+  observacao?: string;
 };
 
 export type Page =
   | "dashboard"
   | "clientes"
   | "estoque"
+  | "pedidos"
   | "fiscal"
+  | "fornecedores"
+  | "relatorios"
   | "email"
-  | "didatico";
+  | "didatico"
+  | "professor";
